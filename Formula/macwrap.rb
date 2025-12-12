@@ -8,13 +8,23 @@ class Macwrap < Formula
   depends_on "python@3.12"
   
   def install
-    # Debug output
-    system "pwd"
-    system "ls -la"
-    system "find . -maxdepth 2"
+    # Print what we see
+    puts "="*80
+    puts "Current directory: #{Dir.pwd}"
+    puts "Files found: #{Dir.entries(".").join(", ")}"
+    puts "="*80
     
-    # This will fail but show us what's there
-    raise "Debug: Current dir contents shown above"
+    # Install everything we can find
+    libexec.install Dir["*"]
+    
+    # Create wrapper
+    (bin/"macwrap").write <<~EOS
+      #!/bin/bash
+      export PYTHONPATH="#{libexec}"
+      exec "#{Formula["python@3.12"].opt_bin}/python3.12" "#{libexec}/macwrap.py" "$@"
+    EOS
+    
+    chmod 0755, bin/"macwrap"
   end
   
   test do
