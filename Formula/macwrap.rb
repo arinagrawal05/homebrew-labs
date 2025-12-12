@@ -7,26 +7,26 @@ class Macwrap < Formula
   
   depends_on "python@3.12"
   
-  resource "textual" do
-    url "https://files.pythonhosted.org/packages/3b/5d/04e3ff5b2d1c0f8918e5c6e8e0e9f3a4a1e9f7c7b8c9d0e1f2a3b4c5d6e7/textual-0.86.3.tar.gz"
-    sha256 "4b273d8c1c0d8c4c3e0e0f9e3e4e5e6e7e8e9e0e1e2e3e4e5e6e7e8e9e0e1e2"
-  end
-  
   def install
     rm_rf ".git"
     
-    # Create virtualenv and install textual
+    # Create virtualenv and install dependencies
     venv = virtualenv_create(libexec, "python3.12")
     venv.pip_install "textual"
+    # Add other dependencies as needed:
+    # venv.pip_install "pandas", "numpy", etc.
     
-    # Install app files
+    # Install app files into the virtualenv site-packages
     libexec.install Dir["*"]
     
-    # Create wrapper
-    (bin/"macwrap").write_env_script(libexec/"bin/macwrap",
-      PYTHONPATH: libexec,
-      PATH: "#{venv.root}/bin:$PATH"
-    )
+    # Create wrapper that uses the virtualenv Python
+    (bin/"macwrap").write <<~EOS
+      #!/bin/bash
+      export PYTHONPATH="#{libexec}:$PYTHONPATH"
+      exec "#{venv.root}/bin/python3.12" "#{libexec}/macwrap.py" "$@"
+    EOS
+    
+    chmod 0755, bin/"macwrap"
   end
   
   test do
