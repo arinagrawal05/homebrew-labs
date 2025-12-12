@@ -7,32 +7,26 @@ class Macwrap < Formula
   
   depends_on "python@3.12"
   
+  resource "textual" do
+    url "https://files.pythonhosted.org/packages/3b/5d/04e3ff5b2d1c0f8918e5c6e8e0e9f3a4a1e9f7c7b8c9d0e1f2a3b4c5d6e7/textual-0.86.3.tar.gz"
+    sha256 "4b273d8c1c0d8c4c3e0e0f9e3e4e5e6e7e8e9e0e1e2e3e4e5e6e7e8e9e0e1e2"
+  end
+  
   def install
-    # Write debug info to a file we can read
-    File.open("/tmp/homebrew-debug.txt", "w") do |f|
-      f.puts "Current directory: #{Dir.pwd}"
-      f.puts "\nFiles in current dir:"
-      f.puts Dir.entries(".").sort.join("\n")
-      f.puts "\nGlob results:"
-      f.puts "Dir['*']: #{Dir['*'].inspect}"
-      f.puts "Dir['**/*']: #{Dir['**/*'].first(20).inspect}"
-    end
+    rm_rf ".git"
     
-    # Try to install
-    if Dir["*"].empty?
-      odie "No files found in current directory! Check /tmp/homebrew-debug.txt"
-    end
+    # Create virtualenv and install textual
+    venv = virtualenv_create(libexec, "python3.12")
+    venv.pip_install "textual"
     
+    # Install app files
     libexec.install Dir["*"]
     
     # Create wrapper
-    (bin/"macwrap").write <<~EOS
-      #!/bin/bash
-      export PYTHONPATH="#{libexec}"
-      exec "#{Formula["python@3.12"].opt_bin}/python3.12" "#{libexec}/macwrap.py" "$@"
-    EOS
-    
-    chmod 0755, bin/"macwrap"
+    (bin/"macwrap").write_env_script(libexec/"bin/macwrap",
+      PYTHONPATH: libexec,
+      PATH: "#{venv.root}/bin:$PATH"
+    )
   end
   
   test do
