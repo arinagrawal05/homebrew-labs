@@ -1,8 +1,8 @@
 class Macwrap < Formula
   desc "A Spotify Wrapped-style yearly analytics tool for your Mac"
   homepage "https://github.com/arinagrawal05/macwrap"
-  url "https://github.com/arinagrawal05/macwrap/archive/refs/tags/v1.0.0.tar.gz"
-  sha256 "ad9dfef85e544d8674fab43f8545aa1922c7aa4a4772498a921a19acf19824a8"
+  url "https://github.com/arinagrawal05/macwrap/archive/refs/tags/v1.0.1.tar.gz"
+  sha256 "08711891513c92c19e634b0372dd656e075d66df369714414bb273331d0dc915"
   license "MIT"
 
   depends_on "python@3.12"
