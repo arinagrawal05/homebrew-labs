@@ -11,11 +11,11 @@ class Macwrap < Formula
     # Install the entire project into libexec
     libexec.install Dir["*"]
 
-    # Install the launcher script
-    bin.install "bin/macwrap"
+    # Install the launcher script (corrected path)
+    bin.install "macwrap/bin/macwrap"
 
     # Make launcher use Python from Homebrew
-    bin.env_script_all_files(libexec/"bin", :PYTHONPATH => libexec)
+    bin.env_script_all_files(libexec/"macwrap/bin", :PYTHONPATH => libexec/"macwrap")
   end
 
   test do
