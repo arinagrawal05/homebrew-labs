@@ -8,15 +8,23 @@ class Macwrap < Formula
   depends_on "python@3.12"
   
   def install
-    # Install the macwrap directory to prefix
-    prefix.install "macwrap"
+    # Change into the macwrap directory that gets extracted
+    cd "macwrap" do
+      libexec.install Dir["*"]
+    end
+    
+    # Make the script executable
+    chmod 0755, libexec/"bin/macwrap"
     
     # Create wrapper in bin
-    (bin/"macwrap").write_env_script(
-      prefix/"macwrap/bin/macwrap",
-      PYTHONPATH: prefix/"macwrap",
-      PYTHONHOME: Formula["python@3.12"].opt_prefix
-    )
+    (bin/"macwrap").write <<~EOS
+      #!/bin/bash
+      export PYTHONPATH="#{libexec}"
+      export PYTHONHOME="#{Formula["python@3.12"].opt_prefix}"
+      exec "#{libexec}/bin/macwrap" "$@"
+    EOS
+    
+    chmod 0755, bin/"macwrap"
   end
   
   test do
