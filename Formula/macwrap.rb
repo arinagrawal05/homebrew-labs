@@ -8,19 +8,13 @@ class Macwrap < Formula
   depends_on "python@3.12"
   
   def install
-    # Homebrew automatically strips the top-level directory from archives
-    # So we're already at the level where app/, bin/, macwrap.py exist
-    libexec.install "app", "bin", "macwrap.py"
+    # Debug output
+    system "pwd"
+    system "ls -la"
+    system "find . -maxdepth 2"
     
-    # Create wrapper
-    (bin/"macwrap").write <<~EOS
-      #!/bin/bash
-      export PYTHONPATH="#{libexec}"
-      export PATH="#{Formula["python@3.12"].opt_bin}:$PATH"
-      exec "#{libexec}/bin/macwrap" "$@"
-    EOS
-    
-    chmod 0755, bin/"macwrap"
+    # This will fail but show us what's there
+    raise "Debug: Current dir contents shown above"
   end
   
   test do
