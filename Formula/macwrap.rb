@@ -8,11 +8,12 @@ class Macwrap < Formula
   depends_on "python@3.12"
   
   def install
-    # Remove git files that shouldn't be in the release
-    rm_rf "macwrap/.git"
+    # After extraction, we're already inside the macwrap directory
+    # Remove git files
+    rm_rf ".git"
     
-    # Install all files to libexec, preserving structure
-    libexec.install Dir["macwrap/*"]
+    # Install everything to libexec
+    libexec.install Dir["*"]
     
     # Create wrapper that sets up environment and calls the script
     (bin/"macwrap").write <<~EOS
