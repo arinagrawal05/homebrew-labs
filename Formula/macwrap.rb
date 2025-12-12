@@ -8,14 +8,11 @@ class Macwrap < Formula
   depends_on "python@3.12"
   
   def install
-    # After extraction, we're already inside the macwrap directory
-    # Remove git files
-    rm_rf ".git"
+    # Homebrew automatically strips the top-level directory from archives
+    # So we're already at the level where app/, bin/, macwrap.py exist
+    libexec.install "app", "bin", "macwrap.py"
     
-    # Install everything to libexec
-    libexec.install Dir["*"]
-    
-    # Create wrapper that sets up environment and calls the script
+    # Create wrapper
     (bin/"macwrap").write <<~EOS
       #!/bin/bash
       export PYTHONPATH="#{libexec}"
