@@ -8,17 +8,14 @@ class Macwrap < Formula
   depends_on "python@3.12"
   
   def install
-    # Debug: Let's see what's actually extracted
-    # The tarball contains: macwrap/bin/macwrap
-    # After extraction, we should be in the directory containing 'macwrap/'
+    # The tarball extracts to a 'macwrap' directory containing bin/macwrap
+    # We need to install this entire directory structure to libexec
+    prefix.install "macwrap"
     
-    # Install the entire macwrap directory to libexec
-    libexec.install "macwrap"
-    
-    # Create a wrapper script in bin
+    # Create a wrapper script in bin that points to the actual script
     (bin/"macwrap").write_env_script(
-      libexec/"macwrap/bin/macwrap",
-      PYTHONPATH: libexec/"macwrap",
+      prefix/"macwrap/bin/macwrap",
+      PYTHONPATH: prefix/"macwrap",
       PYTHONHOME: Formula["python@3.12"].opt_prefix
     )
   end
