@@ -8,19 +8,17 @@ class Macwrap < Formula
   depends_on "python@3.12"
   
   def install
-    # Change into the macwrap directory that gets extracted
-    cd "macwrap" do
-      libexec.install Dir["*"]
-    end
+    # Remove git files that shouldn't be in the release
+    rm_rf "macwrap/.git"
     
-    # Make the script executable
-    chmod 0755, libexec/"bin/macwrap"
+    # Install all files to libexec, preserving structure
+    libexec.install Dir["macwrap/*"]
     
-    # Create wrapper in bin
+    # Create wrapper that sets up environment and calls the script
     (bin/"macwrap").write <<~EOS
       #!/bin/bash
       export PYTHONPATH="#{libexec}"
-      export PYTHONHOME="#{Formula["python@3.12"].opt_prefix}"
+      export PATH="#{Formula["python@3.12"].opt_bin}:$PATH"
       exec "#{libexec}/bin/macwrap" "$@"
     EOS
     
