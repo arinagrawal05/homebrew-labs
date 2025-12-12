@@ -8,18 +8,17 @@ class Macwrap < Formula
   depends_on "python@3.12"
 
   def install
-    # Install entire project into libexec
-    libexec.install Dir["*"]
+    # Explicitly install contents of macwrap/ directory
+    (libexec/"macwrap").install Dir["macwrap/*"]
 
-    # Install launcher FROM libexec, not from source
+    # Install launcher script
     bin.install libexec/"macwrap/bin/macwrap"
 
-    # Wire up python environment for launcher
-    env = {
+    # Env setup
+    bin.env_script_all_files(libexec/"macwrap/bin",
       :PYTHONPATH => libexec/"macwrap",
       :PYTHONHOME => libexec/"macwrap"
-    }
-    bin.env_script_all_files(libexec/"macwrap/bin", env)
+    )
   end
 
   test do
