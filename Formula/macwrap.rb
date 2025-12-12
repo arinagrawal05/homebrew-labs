@@ -8,13 +8,21 @@ class Macwrap < Formula
   depends_on "python@3.12"
   
   def install
-    # Print what we see
-    puts "="*80
-    puts "Current directory: #{Dir.pwd}"
-    puts "Files found: #{Dir.entries(".").join(", ")}"
-    puts "="*80
+    # Write debug info to a file we can read
+    File.open("/tmp/homebrew-debug.txt", "w") do |f|
+      f.puts "Current directory: #{Dir.pwd}"
+      f.puts "\nFiles in current dir:"
+      f.puts Dir.entries(".").sort.join("\n")
+      f.puts "\nGlob results:"
+      f.puts "Dir['*']: #{Dir['*'].inspect}"
+      f.puts "Dir['**/*']: #{Dir['**/*'].first(20).inspect}"
+    end
     
-    # Install everything we can find
+    # Try to install
+    if Dir["*"].empty?
+      odie "No files found in current directory! Check /tmp/homebrew-debug.txt"
+    end
+    
     libexec.install Dir["*"]
     
     # Create wrapper
