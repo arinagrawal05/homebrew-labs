@@ -11,19 +11,21 @@ class Macwrap < Formula
     rm_rf ".git"
     
     # Create virtualenv and install dependencies
-    venv = virtualenv_create(libexec, "python3.12")
-    venv.pip_install "textual"
-    # Add other dependencies as needed:
-    # venv.pip_install "pandas", "numpy", etc.
+    virtualenv_install_with_resources using: "python@3.12"
     
-    # Install app files into the virtualenv site-packages
+    # Since virtualenv_install_with_resources expects a setup.py,
+    # we need a different approach. Let's use system pip directly.
+    system Formula["python@3.12"].opt_bin/"python3.12", "-m", "pip", "install",
+           "--target=#{libexec}", "textual"
+    
+    # Install app files
     libexec.install Dir["*"]
     
-    # Create wrapper that uses the virtualenv Python
+    # Create wrapper
     (bin/"macwrap").write <<~EOS
       #!/bin/bash
       export PYTHONPATH="#{libexec}:$PYTHONPATH"
-      exec "#{venv.root}/bin/python3.12" "#{libexec}/macwrap.py" "$@"
+      exec "#{Formula["python@3.12"].opt_bin}/python3.12" "#{libexec}/macwrap.py" "$@"
     EOS
     
     chmod 0755, bin/"macwrap"
