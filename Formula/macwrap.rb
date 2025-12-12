@@ -10,13 +10,9 @@ class Macwrap < Formula
   def install
     rm_rf ".git"
     
-    # Create virtualenv and install dependencies
-    virtualenv_install_with_resources using: "python@3.12"
-    
-    # Since virtualenv_install_with_resources expects a setup.py,
-    # we need a different approach. Let's use system pip directly.
-    system Formula["python@3.12"].opt_bin/"python3.12", "-m", "pip", "install",
-           "--target=#{libexec}", "textual"
+    # Install textual using pip into libexec
+    system Formula["python@3.12"].opt_bin/"pip3.12", "install",
+           "--target=#{libexec}", "--ignore-installed", "textual"
     
     # Install app files
     libexec.install Dir["*"]
