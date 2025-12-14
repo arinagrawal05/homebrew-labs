@@ -31,6 +31,23 @@ Run:
 macfresh
 ```
 
+### **🧼 macfwrap**
+
+Your Mac. Wrapped. A Spotify Wrapped–style yearly analytics experience for your macOS — entirely in the terminal.
+
+Install:
+
+```bash
+brew install arinagrawal05/labs/macwrap
+```
+
+Run:
+
+```bash
+macwrap
+```
+
+
 ---
 
 ## 🚀 How to Use This Tap
